@@ -1,0 +1,15 @@
+-- For backend
+npm i cors
+npm i express
+npm i -g nodemon
+npm install multer => biar bisa ngurus image
+nodemon index => Run backend Database
+
+-- For frontend
+npm create vite@latest my-react-app -- --template react
+cd my-react-app
+npm install
+npm run dev
+npm i react-router-dom
+npm i bulma => Untuk CSS
+npm i axios => Untuk fetching Database

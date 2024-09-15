@@ -1,0 +1,30 @@
+GET http://localhost:5000/users
+###
+GET http://localhost:5000/users/1
+###
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    {
+        "id": 10,
+        "name": "Daniel Hyoryno Thenaka",
+        "email": "danielhyorynothenaka@gmail.com",
+        "gender": "Male",
+        "image": "1726414311769.png" // Ensure this is a string
+    }   
+
+}
+
+###
+PATCH http://localhost:5000/users/2
+Content-Type: application/json
+
+{
+    "name": "Decronaz L Kuandi",
+    "email": "decronaz@gmail.com",
+    "gender": "Male"
+}
+
+###
+DELETE http://localhost:5000/users/1
