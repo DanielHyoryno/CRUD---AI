@@ -13,7 +13,8 @@ const UserList = () => {
 
     const getUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/users');
+            const response = await axios.get('http://localhost:5000/get');            
+            console.log(response.data);  // Log the response data
             setUser(response.data);
             setLoading(false);
         } catch (error) {
@@ -22,15 +23,20 @@ const UserList = () => {
             setLoading(false);
         }
     };
+    
 
-    const deleteUser = async (id) => {
+    const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/users/${id}`);
-            getUsers(); // Refresh the user list after deletion
+            const response = await axios.delete(`http://localhost:5000/delete/${id}/`);
+            console.log("Delete response:", response.data); // Log the response
+            // Update the state to remove the deleted user
+            getUsers();
         } catch (error) {
-            console.error('Error deleting user:', error);
+            console.error("Error deleting user:", error);
         }
-    }
+    };
+    
+    
 
     // CSS STYLING FOR CARDS
     const containerStyle = {
@@ -119,7 +125,7 @@ const UserList = () => {
                     <div style={cardStyle} key={user.id}>
                         {/* User Image */}
                         <img 
-                            src={`http://localhost:5000/uploads/${user.image}`} 
+                            src={`data:image/jpeg;base64,${user.image}`} 
                             alt={`${user.name}'s image`} 
                             style={imageStyle} 
                             onError={handleImageError} // Handle image loading errors
@@ -129,13 +135,13 @@ const UserList = () => {
                         <div style={cardContentStyle}>
                             <h3>{user.name}</h3>
                             <p>{user.email}</p>
-                            <p>{user.gender}</p>
+                            <p>Prediction Accuracy: {user.accuracy * 100}%</p> {/* Display accuracy */}
 
                             {/* Buttons */}
                             <div style={buttonContainerStyle}>
                                 <Link to={`edit/${user.id}`} style={editButtonStyle}>Edit</Link>
                                 <button 
-                                    onClick={() => deleteUser(user.id)} 
+                                    onClick={() => handleDelete(user.id)}  // Change deleteUser to handleDelete
                                     style={deleteButtonStyle}>
                                     Delete
                                 </button>

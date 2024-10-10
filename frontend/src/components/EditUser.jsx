@@ -3,11 +3,13 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EditUser = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [gender, setGender] = useState('Male');
-    const [image, setImage] = useState(null); // This holds the file to upload
-    const [imagePreview, setImagePreview] = useState(''); // For current image preview
+    const [user, setUser] = useState({
+        name: '',
+        email: '',
+        accuracy: null,
+        image: null
+    });
+    const [imagePreview, setImagePreview] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -17,17 +19,19 @@ const EditUser = () => {
         getUserById();
     }, [id]);
 
+    // Fetch user details by ID
     const getUserById = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/users/${id}`);
-            setName(response.data.name);
-            setEmail(response.data.email);
-            setGender(response.data.gender);
-            // Only set imagePreview if image path exists
-            if (response.data.image) {
-                setImagePreview(`http://localhost:5000${response.data.image}`);
-            } else {
-                setImagePreview('');
+            const response = await axios.get(`http://localhost:5000/get/${id}`);
+            const userData = response.data;
+            setUser({
+                name: userData.name,
+                email: userData.email,
+                accuracy: userData.accuracy,
+                image: null
+            });
+            if (userData.image) {
+                setImagePreview(`data:image/jpeg;base64,${userData.image}`);
             }
             setLoading(false);
         } catch (error) {
@@ -37,36 +41,80 @@ const EditUser = () => {
         }
     };
 
+    // Update user details
     const updateUser = async (e) => {
         e.preventDefault();
+        console.log("Updating user:", user); // Log the user data being submitted
+
         try {
             const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            formData.append('gender', gender);
-            if (image) {
-                formData.append('image', image);
+            formData.append('name', user.name);
+            formData.append('email', user.email);
+            if (user.image) {
+                formData.append('image', user.image);
             }
 
-            await axios.patch(`http://localhost:5000/users/${id}`, formData, {
+            // Send the PUT request to update the user
+            const response = await axios.put(`http://localhost:5000/update/${id}/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            navigate("/");
+
+            // If a new image is uploaded, make a prediction
+            if (user.image) {
+                const img = new Image();
+                img.src = URL.createObjectURL(user.image);
+                img.onload = async () => {
+                    const imgArray = preprocessImage(img); // Function to preprocess the image
+                    const predictionResponse = await axios.post(`http://localhost:5000/predict`, imgArray);
+                    const predictionAccuracy = predictionResponse.data.accuracy; // Assuming your backend returns accuracy
+                    console.log("Prediction accuracy:", predictionAccuracy);
+                    setUser((prevUser) => ({
+                        ...prevUser,
+                        accuracy: predictionAccuracy
+                    }));
+                };
+            }
+
+            console.log("Update response:", response.data); // Log the response
+            navigate("/users"); // Navigate to user list after update
         } catch (error) {
             console.error('Error updating user:', error);
             setError('Failed to update user.');
         }
     };
 
+    // Function to preprocess the image for prediction
+    const preprocessImage = (img) => {
+        // Convert the image to a format suitable for your model
+        // This is a placeholder; implement your preprocessing logic here
+        // For example, resizing, normalizing, etc.
+        return img; // Return the processed image
+    };
+
+    // Handle form field changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUser((prevUser) => ({
+            ...prevUser,
+            [name]: value
+        }));
+    };
+
+    // Handle image selection
     const handleImageChange = (e) => {
         if (e.target.files[0]) {
-            setImage(e.target.files[0]);
-            setImagePreview(URL.createObjectURL(e.target.files[0])); // For preview
+            const file = e.target.files[0];
+            setUser((prevUser) => ({
+                ...prevUser,
+                image: file
+            }));
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
+    // Styles
     const containerStyle = {
         display: 'flex',
         justifyContent: 'center',
@@ -84,6 +132,13 @@ const EditUser = () => {
 
     const fieldStyle = {
         marginBottom: '15px',
+    };
+
+    const inputStyle = {
+        width: '100%',
+        padding: '10px',
+        border: '1px solid #ddd',
+        borderRadius: '4px',
     };
 
     const buttonStyle = {
@@ -112,7 +167,7 @@ const EditUser = () => {
                     <p>{error}</p>
                 ) : (
                     <form onSubmit={updateUser}>
-                        {/* Display current image */}
+                        {/* Display current image if available */}
                         {imagePreview && (
                             <div style={fieldStyle}>
                                 <label>Current Image</label>
@@ -129,10 +184,10 @@ const EditUser = () => {
                             <input 
                                 type="text" 
                                 name="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={user.name}
+                                onChange={handleInputChange}
                                 placeholder="Name"
-                                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+                                style={inputStyle}
                                 required
                             />
                         </div>
@@ -142,25 +197,23 @@ const EditUser = () => {
                             <input 
                                 type="email" 
                                 name="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={user.email}
+                                onChange={handleInputChange}
                                 placeholder="Email"
-                                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+                                style={inputStyle}
                                 required
                             />
                         </div>
 
                         <div style={fieldStyle}>
-                            <label>Gender</label>
-                            <select
-                                name="gender"
-                                value={gender}
-                                onChange={(e) => setGender(e.target.value)}
-                                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-                            >
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
+                            <label>Prediction Accuracy</label>
+                            <input 
+                                type="text" 
+                                name="accuracy"
+                                value={user.accuracy !== null ? `${(user.accuracy * 100).toFixed(2)}%` : 'N/A'}
+                                readOnly
+                                style={inputStyle}
+                            />
                         </div>
 
                         <div style={fieldStyle}>
@@ -170,7 +223,7 @@ const EditUser = () => {
                                 name="image"
                                 accept="image/*"
                                 onChange={handleImageChange}
-                                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+                                style={inputStyle}
                             />
                         </div>
 
