@@ -1,15 +1,12 @@
--- For backend
-npm i cors
-npm i express
-npm i -g nodemon
-npm install multer => biar bisa ngurus image
-nodemon index => Run backend Database
+-- for backend
+pip install Flask Flask-CORS Flask-SQLAlchemy Flask-Marshmallow Pillow tensorflow numpy sqlalchemy marshmallow
+python app.py => Run backend
 
 -- For frontend
 npm create vite@latest my-react-app -- --template react
 cd my-react-app
 npm install
-npm run dev
+npm run dev => Run React Vite
 npm i react-router-dom
 npm i bulma => Untuk CSS
 npm i axios => Untuk fetching Database
