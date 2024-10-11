@@ -24,7 +24,6 @@ const UserList = () => {
         }
     };
     
-
     const handleDelete = async (id) => {
         try {
             const response = await axios.delete(`http://localhost:5000/delete/${id}/`);
@@ -34,73 +33,6 @@ const UserList = () => {
         } catch (error) {
             console.error("Error deleting user:", error);
         }
-    };
-    
-    
-
-    // CSS STYLING FOR CARDS
-    const containerStyle = {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        marginTop: '50px',
-    };
-
-    const cardStyle = {
-        width: '300px',
-        border: '1px solid #ddd',
-        borderRadius: '8px',
-        margin: '10px',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-        overflow: 'hidden',
-        transition: 'transform 0.3s, box-shadow 0.3s',
-    };
-
-    const imageStyle = {
-        width: '100%',
-        height: '200px',
-        objectFit: 'cover',
-    };
-
-    const cardContentStyle = {
-        padding: '15px',
-    };
-
-    const buttonContainerStyle = {
-        display: 'flex',
-        justifyContent: 'center',
-        marginTop: '10px',
-    };
-
-    const buttonStyle = {
-        padding: '5px 10px',
-        margin: '0 5px',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        color: '#fff',
-    };
-
-    const editButtonStyle = {
-        ...buttonStyle,
-        backgroundColor: '#5bc0de',
-    };
-
-    const deleteButtonStyle = {
-        ...buttonStyle,
-        backgroundColor: '#d9534f',
-    };
-
-    const addNewCardStyle = {
-        ...cardStyle,
-        border: '2px dashed #999',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: '#999',
-        fontSize: '18px',
-        fontWeight: 'bold',
     };
 
     // Error Handling for Image
@@ -112,37 +44,37 @@ const UserList = () => {
     if (error) return <p>{error}</p>;
 
     return (
-        <div style={containerStyle}>
+        <div className="flex flex-wrap justify-center mt-12">
             {/* Add New User Card */}
-            <div style={addNewCardStyle}>
-                <Link to="/add" style={{ textDecoration: 'none', color: '#999' }}>
+            <div className="w-72 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center text-gray-500 font-bold text-lg m-2">
+                <Link to="/add" className="text-center">
                     + Add New User
                 </Link>
             </div>
 
             {users.length > 0 ? (
                 users.map((user) => (
-                    <div style={cardStyle} key={user.id}>
+                    <div className="w-72 border border-gray-300 rounded-lg shadow-md m-2 overflow-hidden transition-transform transform hover:scale-105" key={user.id}>
                         {/* User Image */}
                         <img 
                             src={`data:image/jpeg;base64,${user.image}`} 
                             alt={`${user.name}'s image`} 
-                            style={imageStyle} 
+                            className="w-full h-48 object-cover" 
                             onError={handleImageError} // Handle image loading errors
                         />
 
                         {/* User Info */}
-                        <div style={cardContentStyle}>
-                            <h3>{user.name}</h3>
-                            <p>{user.email}</p>
-                            <p>Prediction Accuracy: {user.accuracy * 100}%</p> {/* Display accuracy */}
+                        <div className="p-4 text-center">
+                            <h3 className="text-xl font-semibold">{user.name}</h3>
+                            <p className="text-gray-600">{user.email}</p>
+                            <p className="text-gray-600">Prediction Accuracy: {user.accuracy * 100}%</p> {/* Display accuracy */}
 
                             {/* Buttons */}
-                            <div style={buttonContainerStyle}>
-                                <Link to={`edit/${user.id}`} style={editButtonStyle}>Edit</Link>
+                            <div className="flex justify-center mt-2">
+                                <Link to={`edit/${user.id}`} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Edit</Link>
                                 <button 
-                                    onClick={() => handleDelete(user.id)}  // Change deleteUser to handleDelete
-                                    style={deleteButtonStyle}>
+                                    onClick={() => handleDelete(user.id)} 
+                                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                                     Delete
                                 </button>
                             </div>

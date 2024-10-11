@@ -78,7 +78,7 @@ const EditUser = () => {
             }
 
             console.log("Update response:", response.data); // Log the response
-            navigate("/users"); // Navigate to user list after update
+            navigate("/"); // Navigate to user list after update
         } catch (error) {
             console.error('Error updating user:', error);
             setError('Failed to update user.');
