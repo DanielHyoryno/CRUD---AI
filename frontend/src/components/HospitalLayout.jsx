@@ -13,12 +13,14 @@ const HospitalLayout = () => {
                     <li className="mb-4">
                         <Link to="/" className="hover:text-gray-300">User List</Link>
                     </li>
+                    <li className="mb-4">
+                        <Link to="/stats" className="hover:text-gray-300">Statistics</Link> {/* Link to Stats */}
+                    </li>
                 </ul>
             </nav>
 
             {/* Main Content Area */}
-            <div className="flex-1 p-6 bg-gray-100">
-                {/* Header */}
+            <div className="flex-1 p-6 bg-gray-100 overflow-y-auto">
                 <header className="flex justify-between items-center mb-6">
                     <h2 className="text-3xl font-semibold">Dashboard</h2>
                     <div className="flex items-center">

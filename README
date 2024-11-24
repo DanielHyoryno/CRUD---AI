@@ -1,5 +1,5 @@
 -- for backend
-pip install Flask Flask-CORS Flask-SQLAlchemy Flask-Marshmallow Pillow tensorflow numpy sqlalchemy marshmallow
+pip install Flask Flask-CORS Flask-SQLAlchemy Flask-Marshmallow Pillow tensorflow numpy sqlalchemy marshmallow python-dateutil
 python app.py => Run backend
 
 -- For frontend
@@ -10,3 +10,4 @@ npm run dev => Run React Vite
 npm i react-router-dom
 npm i bulma => Untuk CSS
 npm i axios => Untuk fetching Database
+npm i chart.js react-chartjs-2

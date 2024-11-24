@@ -11,27 +11,30 @@ from PIL import Image
 import io
 import base64
 from marshmallow import post_dump
+from flask import jsonify
+from sqlalchemy import func
+import datetime
+from dateutil.relativedelta import relativedelta
 
-# Initialize the Flask app and its configurations
+# Inisialisasi Flask dan konfigurasi
 app = Flask(__name__)
-CORS(app)  # Allow all origins; adjust as needed
-
+CORS(app)  # Biar bisa akses dari semua origin (frontend dll)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/flask'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize database and serialization libraries
+# Inisialisasi database dan serializer
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-# Declare the User model
+# Model tabel User
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     date = db.Column(db.DateTime, default=datetime.datetime.now)
-    image = db.Column(db.LargeBinary)  # To store image binary data (BLOB)
-    accuracy = db.Column(Numeric(4, 2))  # Accuracy with 2 decimal places
+    image = db.Column(db.LargeBinary)  # Simpan gambar dalam format binary (BLOB)
+    accuracy = db.Column(Numeric(4, 2))  # Akurasi dengan 2 angka desimal
 
     def __init__(self, name, email, image, accuracy):
         self.name = name
@@ -39,41 +42,34 @@ class User(db.Model):
         self.image = image
         self.accuracy = accuracy
 
-# Schema to serialize User model data
-# Schema to serialize User model data
-
+# Schema buat serialisasi data User
 class UserSchema(ma.Schema):
     class Meta:
         fields = ('id', 'name', 'email', 'date', 'accuracy')
-# Initialize schemas
+
+# Inisialisasi schema
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-# Load the pre-trained .h5 model
+# Load model TensorFlow (.h5)
 model = tf.keras.models.load_model('pneumoniaClassifier2.h5')
 
-
-
-# Initialize schemas
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
-
-# Route to get all users
+# Route buat ambil semua data User
 @app.route('/get', methods=['GET'])
 def get_users():
     all_users = User.query.all()
     results = []
     
-    # Manually serialize each user object
+    # Serialize data User satu per satu
     for user in all_users:
         user_data = user_schema.dump(user)
         
-        # Encode the image to base64 if it exists
+        # Kalau ada gambar, encode ke base64
         if user.image:
             try:
                 user_data['image'] = base64.b64encode(user.image).decode('utf-8')
             except Exception:
-                user_data['image'] = None  # In case of an error, set the image as None
+                user_data['image'] = None  # Kalau ada error, set gambar jadi None
         else:
             user_data['image'] = None
         
@@ -81,100 +77,136 @@ def get_users():
         
     return jsonify(results)
 
-
-# Route to get a single user by ID
+# Route buat ambil satu User berdasarkan ID
 @app.route('/get/<id>/', methods=['GET'])
 def post_details(id):
     user = User.query.get(id)
     if user:
         return user_schema.jsonify(user)
     else:
-        return jsonify({"message": "User not found"}), 404
+        return jsonify({"message": "User tidak ditemukan"}), 404
 
-# Route to add a user and run pneumonia prediction
+# Route buat nambah User dan prediksi pneumonia
 @app.route('/add', methods=['POST'])
 def add_predict():
     name = request.form.get('name')
     email = request.form.get('email')
     
-    # Check if the file is present
+    # Cek apakah file ada atau nggak
     if 'image' not in request.files:
-        return jsonify({"message": "No file part"}), 400
+        return jsonify({"message": "File tidak ditemukan"}), 400
     
     file = request.files['image']
     
     if file.filename == '':
-        return jsonify({"message": "No selected file"}), 400
+        return jsonify({"message": "File tidak dipilih"}), 400
 
-    # Process the image and add the user
+    # Proses gambar dan tambah User
     img = Image.open(file).convert('RGB')
     img = img.resize((256, 256))
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Make a prediction using the pre-trained model
+    # Prediksi pakai model pre-trained
     prediction = model.predict(img_array)
     result = float(prediction[0][0])
 
-    # Convert the image to binary format for storage
+    # Konversi gambar ke format binary buat disimpan
     img_binary = io.BytesIO()
     img.save(img_binary, format='JPEG')
     img_binary = img_binary.getvalue()
 
-    # Create a new User instance with the image and prediction accuracy
+    # Buat instance User baru
     user = User(name=name, email=email, image=img_binary, accuracy=result)
     db.session.add(user)
     db.session.commit()
 
     return user_schema.jsonify(user)
 
-# Route to update an existing user
+# Route buat update data User
 @app.route('/update/<id>/', methods=['PUT'])
 def update_user(id):
     user = User.query.get(id)
-    if user:  # Check if the user exists
-        name = request.form.get('name', user.name)  # Use form data for text fields
+    if user:  # Cek apakah User ada
+        name = request.form.get('name', user.name)
         email = request.form.get('email', user.email)
-        # Check if an image is provided in the request
+        # Kalau ada gambar baru, proses ulang gambar
         if 'image' in request.files and request.files['image'].filename != '':
             file = request.files['image']
             img = Image.open(file).convert('RGB')
             img = img.resize((256, 256))
             img_array = np.array(img) / 255.0
             img_array = np.expand_dims(img_array, axis=0)
-            # Make a prediction
+            # Prediksi ulang
             prediction = model.predict(img_array)
             result = float(prediction[0][0])
-            # Convert the image to binary format for storage
+            # Konversi gambar ke binary
             img_binary = io.BytesIO()
             img.save(img_binary, format='JPEG')
             img_binary = img_binary.getvalue()
-            # Update the user's image and accuracy
             user.image = img_binary
             user.accuracy = result
-        # Update the user's name and email
         user.name = name
         user.email = email
         db.session.commit()
         return user_schema.jsonify(user)
     else:
-        return jsonify({"message": "User not found"}), 404
+        return jsonify({"message": "User tidak ditemukan"}), 404
 
-
-# Route to delete a user
+# Route buat hapus User
 @app.route('/delete/<id>/', methods=['DELETE'])
 def delete_user(id):
     user = User.query.get(id)
     if user:
         db.session.delete(user)
-        db.session.commit()  # Ensure this line is executed
+        db.session.commit()
         return user_schema.jsonify(user)
     else:
-        return jsonify({"message": "User not found"}), 404
+        return jsonify({"message": "User tidak ditemukan"}), 404
 
-# Run the Flask app
+# Route buat statistik pasien per bulan di tahun 2024
+@app.route('/api/patient-stats', methods=['GET'])
+def patient_stats():
+    try:
+        # Hitung jumlah User dengan akurasi di atas atau di bawah 0.5
+        above_50_count = User.query.filter(User.accuracy > 0.5).count()
+        below_50_count = User.query.filter(User.accuracy <= 0.5).count()
+
+        print(f"Akurasi di atas 50%: {above_50_count}")
+        print(f"Akurasi di bawah 50%: {below_50_count}")
+
+        # Hitung jumlah pasien per bulan di tahun 2024
+        monthly_counts = []
+        year = 2024
+
+        for month in range(1, 13):
+            # Hitung awal dan akhir bulan
+            month_start = datetime.datetime(year, month, 1)
+            month_end = (month_start + relativedelta(months=1)).replace(day=1)
+
+            count = User.query.filter(
+                func.date(User.date) >= month_start.date(),
+                func.date(User.date) < month_end.date()
+            ).count()
+            
+            monthly_counts.append(count)
+            print(f"Bulan {month}: {count} pasien dari {month_start.date()} sampai {month_end.date()}")
+
+        # Buat response JSON
+        stats = {
+            "above50": above_50_count,
+            "below50": below_50_count,
+            "monthlyCounts": monthly_counts
+        }
+
+        return jsonify(stats)
+
+    except Exception as e:
+        print(f"Error di patient_stats: {e}")
+        return jsonify({"error": "Gagal mendapatkan statistik pasien", "details": str(e)}), 500
+
+# Jalankan aplikasi Flask
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # This will create all the tables in the database.
+        db.create_all()  # Buat semua tabel di database
     app.run(debug=True)
-

@@ -2,6 +2,7 @@ import UserList from "./components/UserList.jsx";
 import AddUser from "./components/AddUser.jsx";
 import EditUser from "./components/EditUser.jsx";
 import HospitalLayout from "./components/HospitalLayout.jsx"; // Import the new layout component
+import Stats from "./components/Stats.jsx"; // Import the Stats component
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import '../index.css'; // Ensure this line is present
 
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<UserList />} /> {/* Default route */}
           <Route path="add" element={<AddUser />} /> {/* Add User route */}
           <Route path="/edit/:id" element={<EditUser />} /> {/* Edit User route */}
+          <Route path="stats" element={<Stats />} /> {/* Stats route */}
         </Route>
       </Routes>
     </BrowserRouter>
