@@ -1,5 +1,5 @@
 1. Install Node.js, biarkan semuanya default dan next saja sampai terinstall.
-2. Install XAMPP, biarkan semuanya default. Lokasi instalasi harus berada di default, yaitu di C:\xampp.
+2. Install XAMPP dari link https://drive.google.com/file/d/1u3ZrfLm1AjWZw4tN9yItuDVy8xu2jXWa/view?usp=sharing, biarkan semuanya default. Lokasi instalasi harus berada di default, yaitu di C:\xampp.
 3. Setelah selesai instalasi, nyalakan XAMPP Control Panel.
 4. Start Apache dan MySQL.
 5. Run install.bat
