@@ -1,3 +1,40 @@
+import mysql.connector
+from mysql.connector import Error
+
+# Function to create the database if it doesn't exist
+def create_database_if_not_exists():
+    try:
+        # Connect to MySQL server
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password=""  # Adjust password if needed
+        )
+
+        if connection.is_connected():
+            cursor = connection.cursor()
+            cursor.execute("SHOW DATABASES")
+            databases = cursor.fetchall()
+
+            # Check if 'flask' database exists
+            if not any(db[0] == 'flask' for db in databases):
+                print("Database 'flask' not found. Creating database...")
+                cursor.execute("CREATE DATABASE flask")
+                print("Database 'flask' created successfully.")
+            else:
+                print("Database 'flask' already exists.")
+            
+            cursor.close()
+
+    except Error as e:
+        print(f"Error while connecting to MySQL: {e}")
+    finally:
+        if connection.is_connected():
+            connection.close()
+
+# Call the function to ensure the database is created
+create_database_if_not_exists()
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy

@@ -3,11 +3,13 @@ pip install Flask Flask-CORS Flask-SQLAlchemy Flask-Marshmallow Pillow tensorflo
 python app.py => Run backend
 
 -- For frontend
-npm create vite@latest my-react-app -- --template react
-cd my-react-app
 npm install
-npm run dev => Run React Vite
 npm i react-router-dom
 npm i bulma => Untuk CSS
 npm i axios => Untuk fetching Database
 npm i chart.js react-chartjs-2
+npm run dev => Run frontend
+
+
+-- Database
+pastikan ada database bernama "flask" di xampp

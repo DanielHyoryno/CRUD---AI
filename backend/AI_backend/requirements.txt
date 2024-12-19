@@ -1,0 +1,11 @@
+Flask
+Flask-CORS
+Flask-SQLAlchemy
+Flask-Marshmallow
+Pillow
+tensorflow
+numpy
+sqlalchemy
+marshmallow
+python-dateutil
+mysql-connector-python
