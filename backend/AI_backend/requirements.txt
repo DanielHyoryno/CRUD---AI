@@ -3,9 +3,10 @@ Flask-CORS
 Flask-SQLAlchemy
 Flask-Marshmallow
 Pillow
-tensorflow
+tensorflow==2.17.0
 numpy
 sqlalchemy
 marshmallow
 python-dateutil
 mysql-connector-python
+marshmallow-sqlalchemy

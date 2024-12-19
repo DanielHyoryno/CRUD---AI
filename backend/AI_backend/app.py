@@ -57,7 +57,7 @@ from dateutil.relativedelta import relativedelta
 app = Flask(__name__)
 CORS(app)  # Biar bisa akses dari semua origin (frontend dll)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/flask'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost/flask'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inisialisasi database dan serializer
