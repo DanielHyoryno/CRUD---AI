@@ -1,15 +1,7 @@
--- for backend
-pip install Flask Flask-CORS Flask-SQLAlchemy Flask-Marshmallow Pillow tensorflow numpy sqlalchemy marshmallow python-dateutil
-python app.py => Run backend
-
--- For frontend
-npm install
-npm i react-router-dom
-npm i bulma => Untuk CSS
-npm i axios => Untuk fetching Database
-npm i chart.js react-chartjs-2
-npm run dev => Run frontend
-
-
--- Database
-pastikan ada database bernama "flask" di xampp
+1. Install Python 3.11.0 menggunakan python-3.11.0-amd64.exe. Click add Python.exe to PATH kemudian Install Now.
+2. Install Node.js menggunakan node-v22.12.0-x64.msi, biarkan semuanya default dan next saja sampai terinstall.
+3. Install XAMPP dari link https://drive.google.com/file/d/1u3ZrfLm1AjWZw4tN9yItuDVy8xu2jXWa/view?usp=sharing, biarkan semuanya default. Lokasi instalasi harus berada di default, yaitu di C:\xampp.
+4. Setelah selesai instalasi, nyalakan XAMPP Control Panel.
+5. Start Apache dan MySQL.
+6. Run install.bat
+7. Run run.bat
