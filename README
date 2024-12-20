@@ -1,4 +1,7 @@
 1. Install Python 3.11.0 menggunakan python-3.11.0-amd64.exe. Click add Python.exe to PATH kemudian Install Now.
+2. PC anda harus diset untuk menggunakan Python 3.11.0. Jika tidak, maka aplikasi tidak akan bekerja. Jika ada beberapa versi Python yang terinstall, maka click Windows Key + S, 
+search edit environment variables for your account, cari variabel Path, edit, kemudian naikkan Python\Python311\ dan Python311\Scripts\ ke paling atas dengan cara menclick mereka masing-masing 
+kemudian menclick move up.
 2. Install Node.js menggunakan node-v22.12.0-x64.msi, biarkan semuanya default dan next saja sampai terinstall.
 3. Install XAMPP dari link https://drive.google.com/file/d/1u3ZrfLm1AjWZw4tN9yItuDVy8xu2jXWa/view?usp=sharing, biarkan semuanya default. Lokasi instalasi harus berada di default, yaitu di C:\xampp.
 4. Setelah selesai instalasi, nyalakan XAMPP Control Panel.
