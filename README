@@ -7,4 +7,5 @@ kemudian menclick move up.
 4. Setelah selesai instalasi, nyalakan XAMPP Control Panel.
 5. Start Apache dan MySQL.
 6. Run install.bat
-7. Run run.bat
+7. Run run.bat (Tunggu sekitar 3-4 menit sampai setup backend python selesai. Jika sudah ada tulisan running on http://... pada cmd dengan tulisan python setelah itu baru bisa lanjut)
+8. Click website localhost pada cmd frontend
