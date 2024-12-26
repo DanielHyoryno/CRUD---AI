@@ -7,7 +7,7 @@ set MYSQL_PATH=C:\xampp\mysql\bin\mysql.exe
 
 :: Check if MySQL is running
 echo Checking MySQL status...
-"%MYSQL_PATH%" --version >nul 2>&1
+"%MYSQL_PATH%" --version
 if %ERRORLEVEL% neq 0 (
     echo ERROR: MySQL is not running or not accessible. Please start MySQL from the XAMPP Control Panel.
     pause
@@ -16,10 +16,10 @@ if %ERRORLEVEL% neq 0 (
 
 :: Check if the database exists, if not create it
 echo Checking for the 'flask' database...
-"%MYSQL_PATH%" -u root -e "SHOW DATABASES LIKE 'flask';" >nul 2>&1
+"%MYSQL_PATH%" -u root -e "SHOW DATABASES LIKE 'flask';"
 if %ERRORLEVEL% neq 0 (
     echo Database not found. Creating database...
-    "%MYSQL_PATH%" -u root -e "CREATE DATABASE flask;" >nul 2>&1
+    "%MYSQL_PATH%" -u root -e "CREATE DATABASE flask;"
     if %ERRORLEVEL% neq 0 (
         echo ERROR: Failed to create the database. Please check your MySQL configuration and permissions.
         pause
@@ -41,14 +41,14 @@ if %ERRORLEVEL% neq 0 (
 
 :: Install Python dependencies
 echo Installing Python dependencies...
-python -m ensurepip --upgrade >nul 2>&1
+python -m ensurepip --upgrade
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to upgrade pip. Ensure Python is installed and configured properly.
     pause
     exit /b
 )
-pip install --upgrade pip >nul 2>&1
-pip install --user -r requirements.txt >nul 2>&1
+pip install --upgrade pip
+pip install --user -r requirements.txt
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to install Python dependencies. Check the requirements.txt file and your Python environment.
     pause
@@ -64,7 +64,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b
 )
 echo Installing frontend dependencies...
-npm install >nul 2>&1
+npm install
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to install frontend dependencies. Ensure Node.js and npm are installed.
     pause
